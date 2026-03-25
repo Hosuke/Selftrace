@@ -134,23 +134,47 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>每行字数</label>
-                    <select id="cols">
-                        <option value="4">4字</option>
-                        <option value="5">5字</option>
-                        <option value="6" selected>6字</option>
-                        <option value="8">8字</option>
+                    <label>纸张格式</label>
+                    <select id="paperFormat" onchange="applyPaperFormat()">
+                        <optgroup label="四尺对开（常用练习纸）">
+                            <option value="4x7:140" selected>28格 (4列×7行) · 标准练字</option>
+                            <option value="4x6:160">24格 (4列×6行) · 稍大字</option>
+                            <option value="3x5:180">15格 (3列×5行) · 大字练习</option>
+                            <option value="2x4:220">8格 (2列×4行) · 特大字入门</option>
+                            <option value="6x8:100">48格 (6列×8行) · 小楷</option>
+                        </optgroup>
+                        <optgroup label="四尺四开（小幅练习）">
+                            <option value="4x4:140">16格 (4列×4行)</option>
+                            <option value="3x4:160">12格 (3列×4行)</option>
+                            <option value="2x3:200">6格 (2列×3行) · 大字</option>
+                        </optgroup>
+                        <optgroup label="考级/比赛">
+                            <option value="4x7:140">考级标准 28格</option>
+                        </optgroup>
+                        <option value="custom">自定义...</option>
                     </select>
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row" id="customRow" style="display:none;">
+                <div class="form-group">
+                    <label>每行字数</label>
+                    <select id="cols">
+                        <option value="2">2字</option>
+                        <option value="3">3字</option>
+                        <option value="4" selected>4字</option>
+                        <option value="5">5字</option>
+                        <option value="6">6字</option>
+                        <option value="8">8字</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>格子大小</label>
                     <select id="cellSize">
-                        <option value="120">小</option>
-                        <option value="160" selected>中</option>
-                        <option value="200">大</option>
-                        <option value="260">特大</option>
+                        <option value="100">小 (小楷)</option>
+                        <option value="140" selected>中 (标准)</option>
+                        <option value="180">大</option>
+                        <option value="220">特大</option>
+                        <option value="260">超大</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -321,11 +345,43 @@
 
         document.getElementById('steleChoice').addEventListener('change', () => generatePreview());
 
+        // ===== 纸张格式预设 =====
+        function applyPaperFormat() {
+            const val = document.getElementById('paperFormat').value;
+            const customRow = document.getElementById('customRow');
+            if (val === 'custom') {
+                customRow.style.display = 'flex';
+                return;
+            }
+            customRow.style.display = 'none';
+            // Parse format: "cols x rows : cellSize"
+            const [grid, size] = val.split(':');
+            const [cols] = grid.split('x');
+            document.getElementById('cols').value = cols;
+            document.getElementById('cellSize').value = size;
+            generatePreview();
+        }
+
         function getConfig() {
+            // If using a preset, parse rows from format string
+            const fmt = document.getElementById('paperFormat').value;
+            let cols, cellSize, maxRows;
+            if (fmt !== 'custom') {
+                const [grid, size] = fmt.split(':');
+                const parts = grid.split('x');
+                cols = parseInt(parts[0]);
+                cellSize = parseInt(size);
+                maxRows = parseInt(parts[1]);
+            } else {
+                cols = parseInt(document.getElementById('cols').value);
+                cellSize = parseInt(document.getElementById('cellSize').value);
+                maxRows = null;
+            }
             return {
                 text: document.getElementById('inputText').value.replace(/\s+/g, ''),
-                cols: parseInt(document.getElementById('cols').value),
-                cellSize: parseInt(document.getElementById('cellSize').value),
+                cols,
+                cellSize,
+                maxRows,
                 gridType: document.getElementById('gridType').value,
                 mode: document.getElementById('mode').value,
                 direction: document.getElementById('direction').value,
@@ -375,8 +431,15 @@
             checkCoverage(cfg.text, cfg.preferred);
 
             const chars = [...cfg.text].filter(c => c.trim());
-            const cols = cfg.direction === 'vertical' ? Math.ceil(chars.length / cfg.cols) : cfg.cols;
-            const rowCount = cfg.direction === 'vertical' ? cfg.cols : Math.ceil(chars.length / cfg.cols);
+            let cols, rowCount;
+            if (cfg.direction === 'vertical') {
+                rowCount = cfg.maxRows || cfg.cols;
+                cols = Math.ceil(chars.length / rowCount);
+            } else {
+                cols = cfg.cols;
+                const minRows = Math.ceil(chars.length / cols);
+                rowCount = cfg.maxRows ? Math.max(minRows, cfg.maxRows) : minRows;
+            }
 
             const padding = 40;
             const titleHeight = 50;
