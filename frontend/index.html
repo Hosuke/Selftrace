@@ -223,9 +223,10 @@
         };
 
         // Link char sets from stele_chars.js
+        const CHAR_SETS = { JIAGUWEN_CHARS, SHUOWEN_CHARS, CAOGUANBEI_CHARS, AOYAGILISHU_CHARS, QIJI_CHARS, XUANDONGKAI_CHARS, MASAFONT_CHARS, CAOSHU_CHARS, BAKUDAI_CHARS };
         for (const key of Object.keys(STELES)) {
             const varName = key.toUpperCase() + '_CHARS';
-            STELES[key].chars = (typeof window[varName] !== 'undefined') ? window[varName] : new Set();
+            STELES[key].chars = CHAR_SETS[varName] || new Set();
         }
 
         // Auto-match priority: 碑帖复刻优先, 再按书体
