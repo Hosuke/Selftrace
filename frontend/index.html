@@ -108,31 +108,25 @@
                 <div class="form-group">
                     <label>优先碑帖</label>
                     <select id="steleChoice">
-                        <option value="auto" selected>自动匹配（本地字体+动态拓片）</option>
-                        <optgroup label="碑帖复刻（本地字体）">
-                            <option value="caoguanbei">曹全碑（东汉·隶书·602字）</option>
-                            <option value="qiji">齐伋体（明代·刻本·5856字）</option>
-                            <option value="shuowen">说文解字（东汉·小篆·6738字）</option>
-                            <option value="jiaguwen">甲骨文（商代·1312字）</option>
+                        <option value="auto" selected>自动匹配（所有来源）</option>
+                        <optgroup label="── 按书体·动态拓片 ──">
+                            <option value="style:隶书">隶书（15碑自动匹配）</option>
+                            <option value="style:楷书">楷书（13碑自动匹配）</option>
+                            <option value="style:行书">行书（6帖自动匹配）</option>
+                            <option value="style:草书">草书（4帖自动匹配）</option>
+                            <option value="style:篆书">篆书（4碑自动匹配）</option>
                         </optgroup>
-                        <optgroup label="书法风格（本地字体）">
-                            <option value="aoyagilishu">青柳隶书（隶书·12204字）</option>
-                            <option value="xuandongkai">玄冬楷书（楷书·6775字）</option>
-                            <option value="masafont">正风行书（行书·17615字）</option>
-                            <option value="caoshu">流江草书（草书·6763字）</option>
-                            <option value="bakudai">莫大毛笔（毛笔·18375字）</option>
+                        <optgroup label="── 指定碑帖·隶书 ──">
+                            <option value="rub:曹全碑">曹全碑</option>
+                            <option value="rub:礼器碑">礼器碑</option>
+                            <option value="rub:乙瑛碑">乙瑛碑</option>
+                            <option value="rub:张迁碑">张迁碑</option>
+                            <option value="rub:史晨碑">史晨碑</option>
+                            <option value="rub:石门颂">石门颂</option>
+                            <option value="rub:封龙山碑">封龙山碑</option>
+                            <option value="rub:熹平石经">熹平石经</option>
                         </optgroup>
-                        <optgroup label="── 碑帖拓片·隶书（动态加载）──">
-                            <option value="rub:曹全碑">曹全碑 拓片</option>
-                            <option value="rub:礼器碑">礼器碑 拓片</option>
-                            <option value="rub:乙瑛碑">乙瑛碑 拓片</option>
-                            <option value="rub:张迁碑">张迁碑 拓片</option>
-                            <option value="rub:史晨碑">史晨碑 拓片</option>
-                            <option value="rub:石门颂">石门颂 拓片</option>
-                            <option value="rub:封龙山碑">封龙山碑 拓片</option>
-                            <option value="rub:熹平石经">熹平石经 拓片</option>
-                        </optgroup>
-                        <optgroup label="── 碑帖拓片·楷书（动态加载）──">
+                        <optgroup label="── 指定碑帖·楷书 ──">
                             <option value="rub:多宝塔碑">颜真卿·多宝塔碑</option>
                             <option value="rub:颜勤礼碑">颜真卿·颜勤礼碑</option>
                             <option value="rub:玄秘塔碑">柳公权·玄秘塔碑</option>
@@ -140,17 +134,28 @@
                             <option value="rub:雁塔圣教序">褚遂良·雁塔圣教序</option>
                             <option value="rub:胆巴碑">赵孟頫·胆巴碑</option>
                         </optgroup>
-                        <optgroup label="── 碑帖拓片·行草（动态加载）──">
+                        <optgroup label="── 指定碑帖·行草 ──">
                             <option value="rub:兰亭序">王羲之·兰亭序</option>
                             <option value="rub:圣教序">怀仁集王·圣教序</option>
                             <option value="rub:寒食帖">苏轼·寒食帖</option>
                             <option value="rub:自叙帖">怀素·自叙帖</option>
                             <option value="rub:书谱">孙过庭·书谱</option>
                         </optgroup>
-                        <optgroup label="── 碑帖拓片·篆书（动态加载）──">
+                        <optgroup label="── 指定碑帖·篆书 ──">
                             <option value="rub:石鼓文">石鼓文</option>
                             <option value="rub:泰山刻石">泰山刻石</option>
                             <option value="rub:峄山碑">峄山碑</option>
+                        </optgroup>
+                        <optgroup label="── 本地字体 ──">
+                            <option value="caoguanbei">曹全碑 字体(602字)</option>
+                            <option value="qiji">齐伋体 字体(5856字)</option>
+                            <option value="shuowen">说文解字 字体(6738字)</option>
+                            <option value="jiaguwen">甲骨文 字体(1312字)</option>
+                            <option value="aoyagilishu">青柳隶书 字体(12204字)</option>
+                            <option value="xuandongkai">玄冬楷书 字体(6775字)</option>
+                            <option value="masafont">正风行书 字体(17615字)</option>
+                            <option value="caoshu">流江草书 字体(6763字)</option>
+                            <option value="bakudai">莫大毛笔 字体(18375字)</option>
                         </optgroup>
                     </select>
                 </div>
@@ -322,17 +327,16 @@
             return '/api/stele-image';
         }
 
-        async function fetchRubbingImage(char, preferredStele) {
-            const cacheKey = `${char}_${preferredStele || 'auto'}`;
+        async function fetchRubbingImage(char, steleList) {
+            const cacheKey = `${char}_${steleList ? steleList.join(',') : 'auto'}`;
             if (imageCache[cacheKey] !== undefined) return imageCache[cacheKey];
 
             const api = getApiBase();
             if (!api) return null;
 
-            // If specific stele requested, only try that one
-            // Otherwise try all in priority order
-            const steles = preferredStele
-                ? [preferredStele]
+            // Use provided list or default to all
+            const steles = (steleList && steleList.length > 0)
+                ? steleList
                 : RUBBING_STELES;
 
             for (const stele of steles) {
@@ -387,17 +391,25 @@
         }
 
         // ===== 找出一个字应该用哪个碑帖 =====
-        function isRubbingMode(preferred) {
-            return preferred && preferred.startsWith('rub:');
+        function isDynamicMode(preferred) {
+            return preferred && (preferred.startsWith('rub:') || preferred.startsWith('style:'));
         }
 
-        function getRubbingSteleName(preferred) {
-            return preferred.slice(4); // remove 'rub:'
+        // 获取动态加载时要尝试的碑帖列表
+        function getDynamicSteles(preferred) {
+            if (preferred.startsWith('rub:')) {
+                return [preferred.slice(4)]; // 指定碑帖
+            }
+            if (preferred.startsWith('style:')) {
+                const style = preferred.slice(6);
+                return RUBBING_STELES_BY_STYLE[style] || RUBBING_STELES;
+            }
+            return RUBBING_STELES; // auto fallback
         }
 
         function findSteleForChar(char, preferred) {
-            // Rubbing mode: skip local fonts entirely
-            if (isRubbingMode(preferred)) return null;
+            // 动态模式: 跳过本地字体，全部走API
+            if (isDynamicMode(preferred)) return null;
 
             // If preferred local stele is specified and has this char, use it
             if (preferred !== 'auto') {
@@ -652,10 +664,10 @@
                     drawMissingPlaceholder(ctx, cellX, cellY, cfg.cellSize, fontSize, char);
 
                     // 异步: 尝试从API加载拓片
-                    const rubbingStele = isRubbingMode(cfg.preferred) ? getRubbingSteleName(cfg.preferred) : null;
+                    const dynamicSteles = isDynamicMode(cfg.preferred) ? getDynamicSteles(cfg.preferred) : null;
                     if (getApiBase()) {
                         (async () => {
-                            const rubbing = await fetchRubbingImage(char, rubbingStele);
+                            const rubbing = await fetchRubbingImage(char, dynamicSteles);
                             if (rubbing && rubbing.img) {
                                 // 重绘这个格子
                                 const pad = Math.floor(cfg.cellSize * 0.08);
