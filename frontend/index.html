@@ -3,201 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>隶书字帖生成器</title>
+    <title>碑帖字帖生成器</title>
     <style>
-        @font-face {
-            font-family: 'LiShu';
-            src: url('./fonts/lishu.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
+        @font-face { font-family: 'CaoQuanBei'; src: url('./fonts/CaoQuanBei.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'Qiji'; src: url('./fonts/qiji.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'ShuowenJiezi'; src: url('./fonts/ShuowenJiezi.ttf') format('truetype'); font-display: swap; }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: #f5f0e8;
-            color: #333;
-            min-height: 100vh;
+            background: #f5f0e8; color: #333; min-height: 100vh;
         }
         .header {
-            background: linear-gradient(135deg, #2c1810, #4a2c20);
-            color: #e8d5b5;
-            padding: 24px 0;
-            text-align: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #1a1008, #2c1810);
+            color: #e8d5b5; padding: 28px 0; text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
         }
-        .header h1 {
-            font-size: 32px;
-            font-weight: 300;
-            letter-spacing: 8px;
-            font-family: 'LiShu', serif;
-        }
-        .header p {
-            font-size: 14px;
-            opacity: 0.7;
-            margin-top: 6px;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
+        .header h1 { font-size: 36px; font-weight: 300; letter-spacing: 12px; font-family: 'CaoQuanBei', serif; }
+        .header p { font-size: 14px; opacity: 0.6; margin-top: 8px; letter-spacing: 2px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
         .controls {
-            background: white;
-            border-radius: 12px;
-            padding: 28px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-            margin-bottom: 24px;
+            background: white; border-radius: 12px; padding: 28px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06); margin-bottom: 24px;
         }
-        .controls h2 {
-            font-size: 18px;
-            color: #4a2c20;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .form-row {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            margin-bottom: 16px;
-        }
+        .controls h2 { font-size: 18px; color: #4a2c20; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .form-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; }
         .form-group { flex: 1; min-width: 150px; }
         .form-group.wide { flex: 3; min-width: 300px; }
-        label {
-            display: block;
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
+        label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: 500; }
         textarea {
-            width: 100%;
-            height: 80px;
-            border: 2px solid #e0d5c5;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 18px;
-            font-family: inherit;
-            resize: vertical;
-            transition: border-color 0.2s;
+            width: 100%; height: 80px; border: 2px solid #e0d5c5; border-radius: 8px;
+            padding: 12px; font-size: 18px; font-family: inherit; resize: vertical;
         }
         textarea:focus { outline: none; border-color: #8b6914; }
         select {
-            width: 100%;
-            border: 2px solid #e0d5c5;
-            border-radius: 8px;
-            padding: 10px 12px;
-            font-size: 14px;
-            font-family: inherit;
-            background: white;
-            transition: border-color 0.2s;
+            width: 100%; border: 2px solid #e0d5c5; border-radius: 8px;
+            padding: 10px 12px; font-size: 14px; font-family: inherit; background: white;
         }
         select:focus { outline: none; border-color: #8b6914; }
         .btn-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
-        .btn {
-            padding: 12px 32px;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #8b6914, #6b4f10);
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(139, 105, 20, 0.3);
-        }
+        .btn { padding: 12px 32px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #6b4226, #4a2c20); color: #e8d5b5; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(74,44,32,0.4); }
         .btn-secondary { background: #f0ebe2; color: #4a2c20; }
         .btn-secondary:hover { background: #e6dfd4; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .preview-area {
-            background: white;
-            border-radius: 12px;
-            padding: 28px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-            min-height: 300px;
+            background: white; border-radius: 12px; padding: 28px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06); min-height: 300px;
         }
-        .preview-area h2 {
-            font-size: 18px;
-            color: #4a2c20;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
+        .preview-area h2 { font-size: 18px; color: #4a2c20; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
         .preview-container { text-align: center; padding: 20px 0; overflow-x: auto; }
-        .preview-container canvas { border: 1px solid #eee; border-radius: 4px; max-width: 100%; }
+        .preview-container canvas { border: 1px solid #ddd; border-radius: 4px; max-width: 100%; }
         .placeholder { color: #bbb; font-size: 16px; padding: 60px 0; }
-        .loading { padding: 40px; text-align: center; color: #888; }
-        .loading::after {
-            content: '';
-            display: inline-block;
-            width: 20px; height: 20px;
-            border: 2px solid #ccc;
-            border-top-color: #8b6914;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .font-status {
-            font-size: 12px;
-            padding: 8px 16px;
-            border-radius: 6px;
-            margin-bottom: 16px;
-            display: inline-block;
-        }
+        .font-status { font-size: 12px; padding: 8px 16px; border-radius: 6px; margin-bottom: 16px; display: inline-block; }
         .font-loaded { background: #e8f5e9; color: #2e7d32; }
         .font-loading { background: #fff3e0; color: #e65100; }
-        .footer {
-            text-align: center;
-            padding: 30px;
-            color: #aaa;
-            font-size: 13px;
-        }
         .stele-select { margin-top: 8px; }
         .stele-tag {
-            display: inline-block;
-            padding: 4px 12px;
-            margin: 4px;
-            border-radius: 20px;
-            font-size: 13px;
-            cursor: pointer;
-            border: 1px solid #d0c5b0;
-            background: #faf5ec;
-            color: #6b5c3e;
-            transition: all 0.2s;
+            display: inline-block; padding: 4px 12px; margin: 4px; border-radius: 20px;
+            font-size: 13px; cursor: pointer; border: 1px solid #d0c5b0;
+            background: #faf5ec; color: #6b5c3e; transition: all 0.2s;
         }
-        .stele-tag:hover, .stele-tag.active {
-            background: #4a2c20;
-            color: #e8d5b5;
-            border-color: #4a2c20;
+        .stele-tag:hover, .stele-tag.active { background: #4a2c20; color: #e8d5b5; border-color: #4a2c20; }
+        .coverage-info {
+            background: #faf5ec; border: 1px solid #e0d5c5; border-radius: 8px;
+            padding: 12px 16px; margin-top: 12px; font-size: 13px; color: #6b5c3e; display: none;
         }
+        .coverage-info .found { color: #2e7d32; }
+        .coverage-info .missing { color: #c62828; }
+        .footer { text-align: center; padding: 30px; color: #aaa; font-size: 13px; }
+
+        .stele-badge {
+            display: inline-block; padding: 1px 6px; border-radius: 3px;
+            font-size: 9px; margin-left: 2px; vertical-align: middle;
+        }
+        .badge-cqb { background: #e8d5b5; color: #6b4226; }
+        .badge-qiji { background: #d5e0e8; color: #2c4a5a; }
+        .badge-sw { background: #dde8d5; color: #3a5a2c; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>隶 书 字 帖</h1>
-        <p>历史碑帖 · 自动排版 · 下载练习</p>
+        <h1>碑 帖 字 帖</h1>
+        <p>曹全碑 · 齐伋体 · 说文解字 — 三种历史字形，9201字覆盖</p>
     </div>
 
     <div class="container">
         <div class="controls">
             <h2>输入设置</h2>
-            <div id="fontStatus" class="font-status font-loading">隶书字体加载中...</div>
+            <div id="fontStatus" class="font-status font-loading">碑帖字体加载中...</div>
             <div class="form-row">
                 <div class="form-group wide">
-                    <label>输入要练习的文字</label>
-                    <textarea id="inputText" placeholder="请输入汉字，如：永和九年岁在癸丑">永和九年岁在癸丑</textarea>
+                    <label>输入要练习的文字（自动匹配碑帖原字）</label>
+                    <textarea id="inputText" placeholder="请输入汉字，系统自动从碑帖中匹配">永和九年岁在癸丑</textarea>
                 </div>
             </div>
             <div class="form-row">
+                <div class="form-group">
+                    <label>优先碑帖</label>
+                    <select id="steleChoice">
+                        <option value="auto" selected>自动匹配（优先曹全碑）</option>
+                        <option value="caoguanbei">曹全碑（东汉·隶书·602字）</option>
+                        <option value="qiji">齐伋体（明代·木版刻本·5856字）</option>
+                        <option value="shuowen">说文解字（东汉·小篆·6738字）</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>格子类型</label>
                     <select id="gridType">
@@ -216,13 +126,15 @@
                         <option value="8">8字</option>
                     </select>
                 </div>
+            </div>
+            <div class="form-row">
                 <div class="form-group">
                     <label>格子大小</label>
                     <select id="cellSize">
-                        <option value="120">小 (120px)</option>
-                        <option value="160" selected>中 (160px)</option>
-                        <option value="200">大 (200px)</option>
-                        <option value="260">特大 (260px)</option>
+                        <option value="120">小</option>
+                        <option value="160" selected>中</option>
+                        <option value="200">大</option>
+                        <option value="260">特大</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -233,8 +145,6 @@
                         <option value="linmo">临摹（浅灰）</option>
                     </select>
                 </div>
-            </div>
-            <div class="form-row">
                 <div class="form-group">
                     <label>排列方向</label>
                     <select id="direction">
@@ -242,19 +152,23 @@
                         <option value="vertical">竖排</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>经典碑帖范字（快捷输入）</label>
+            </div>
+            <div class="form-row">
+                <div class="form-group wide">
+                    <label>快捷输入</label>
                     <div class="stele-select">
-                        <span class="stele-tag" data-text="蚕头雁尾波磔分明">基本笔画</span>
                         <span class="stele-tag" data-text="永和九年岁在癸丑暮春之初">兰亭序</span>
                         <span class="stele-tag" data-text="大道之行天下为公">礼运大同</span>
                         <span class="stele-tag" data-text="上善若水厚德载物">经典名句</span>
                         <span class="stele-tag" data-text="天行健君子以自强不息">周易</span>
+                        <span class="stele-tag" data-text="曹全碑隶书字帖">曹全碑</span>
+                        <span class="stele-tag" data-text="人之初性本善">三字经</span>
                     </div>
                 </div>
             </div>
+            <div class="coverage-info" id="coverageInfo"></div>
             <div class="btn-row">
-                <button class="btn btn-primary" id="btnPreview" onclick="generatePreview()">生成预览</button>
+                <button class="btn btn-primary" onclick="generatePreview()">生成预览</button>
                 <button class="btn btn-secondary" onclick="downloadImage()">下载图片</button>
                 <button class="btn btn-secondary" onclick="downloadPDF()">下载 PDF</button>
             </div>
@@ -268,35 +182,140 @@
         </div>
     </div>
 
-    <div class="footer">隶书字帖生成器 · 字体: 王漢宗中隸書繁 (GPL) · 碑帖数据持续更新中</div>
+    <div class="footer">
+        <a href="strokes.html" style="color:#6b4226;text-decoration:none;font-weight:600;">笔画教学 →</a>
+        <br><br>
+        碑帖字帖生成器 · 只用真实历史字形 · 曹全碑(CoQuBeLi) · 齐伋体(SIL OFL) · 说文解字(台湾政府开放数据)
+    </div>
 
-    <!-- jsPDF for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="./s2t.js"></script>
+    <script src="./stele_chars.js"></script>
 
     <script>
-        let lishuFontLoaded = false;
+        // ===== 碑帖配置 =====
+        const STELES = {
+            caoguanbei: {
+                fontFamily: 'CaoQuanBei',
+                name: '曹全碑',
+                period: '东汉',
+                style: '隶书',
+                file: './fonts/CaoQuanBei.ttf',
+                chars: null, // will be set from stele_chars.js
+                color: '#6b4226',
+                bgColor: '#e8d5b5',
+                loaded: false,
+            },
+            qiji: {
+                fontFamily: 'Qiji',
+                name: '齐伋体',
+                period: '明代',
+                style: '木版刻本',
+                file: './fonts/qiji.ttf',
+                chars: null,
+                color: '#2c4a5a',
+                bgColor: '#d5e0e8',
+                loaded: false,
+            },
+            shuowen: {
+                fontFamily: 'ShuowenJiezi',
+                name: '说文解字',
+                period: '东汉',
+                style: '小篆',
+                file: './fonts/ShuowenJiezi.ttf',
+                chars: null,
+                color: '#3a5a2c',
+                bgColor: '#dde8d5',
+                loaded: false,
+            },
+        };
+
+        // Link char sets from stele_chars.js
+        STELES.caoguanbei.chars = typeof CAOGUANBEI_CHARS !== 'undefined' ? CAOGUANBEI_CHARS : new Set();
+        STELES.qiji.chars = typeof QIJI_CHARS !== 'undefined' ? QIJI_CHARS : new Set();
+        STELES.shuowen.chars = typeof SHUOWEN_CHARS !== 'undefined' ? SHUOWEN_CHARS : new Set();
+
+        // Auto-match priority order
+        const AUTO_PRIORITY = ['caoguanbei', 'qiji', 'shuowen'];
+
         let canvas = null;
 
-        // 加载隶书字体
-        async function loadFont() {
+        // ===== 字体加载 =====
+        async function loadAllFonts() {
             const statusEl = document.getElementById('fontStatus');
-            try {
-                const font = new FontFace('LiShu', 'url(./fonts/lishu.ttf)');
-                await font.load();
-                document.fonts.add(font);
-                lishuFontLoaded = true;
-                statusEl.textContent = '隶书字体已加载 (王漢宗中隸書繁)';
+            const loaded = [];
+            for (const [key, stele] of Object.entries(STELES)) {
+                try {
+                    const face = new FontFace(stele.fontFamily, `url(${stele.file})`);
+                    await face.load();
+                    document.fonts.add(face);
+                    stele.loaded = true;
+                    loaded.push(`${stele.name}(${stele.chars.size}字)`);
+                } catch (e) {
+                    console.warn(`${stele.name} load failed:`, e);
+                }
+            }
+            if (loaded.length) {
+                statusEl.textContent = `已加载: ${loaded.join(' / ')}`;
                 statusEl.className = 'font-status font-loaded';
-                // 自动生成预览
                 generatePreview();
-            } catch (e) {
-                statusEl.textContent = '隶书字体加载失败，使用系统字体';
+            } else {
+                statusEl.textContent = '字体加载失败，请刷新';
                 statusEl.className = 'font-status font-loading';
-                console.error('Font load error:', e);
             }
         }
 
-        // 碑帖快捷输入
+        // ===== 找出一个字应该用哪个碑帖 =====
+        function findSteleForChar(char, preferred) {
+            // If preferred stele is specified and has this char, use it
+            if (preferred !== 'auto') {
+                const stele = STELES[preferred];
+                if (stele && stele.chars.has(char)) return preferred;
+            }
+            // Auto: try each in priority order
+            for (const key of AUTO_PRIORITY) {
+                if (STELES[key].chars.has(char)) return key;
+            }
+            return null;
+        }
+
+        // ===== 覆盖率检查 =====
+        function checkCoverage(text, preferred) {
+            const el = document.getElementById('coverageInfo');
+            const chars = [...text].filter(c => c.trim());
+            if (!chars.length) { el.style.display = 'none'; return; }
+
+            const found = {};
+            const missing = [];
+            for (const c of chars) {
+                const steleKey = findSteleForChar(c, preferred);
+                if (steleKey) {
+                    if (!found[steleKey]) found[steleKey] = [];
+                    found[steleKey].push(c);
+                } else {
+                    missing.push(c);
+                }
+            }
+
+            el.style.display = 'block';
+            let html = '';
+            const totalFound = Object.values(found).reduce((a, b) => a + b.length, 0);
+            for (const [key, cs] of Object.entries(found)) {
+                const stele = STELES[key];
+                html += `<span style="background:${stele.bgColor};color:${stele.color};padding:2px 8px;border-radius:4px;margin-right:6px;">${stele.name}: ${cs.length}字</span>`;
+            }
+            if (missing.length) {
+                html += `<br style="margin-top:6px"><span class="missing">暂无碑帖: ${missing.join('、')}（${missing.length}字）</span>`;
+            } else {
+                html = `<span class="found">全部 ${totalFound} 字已匹配碑帖</span><br>` + html;
+            }
+            if (totalFound > 0 && missing.length > 0) {
+                html = `<span class="found">${totalFound} 字有碑帖原字</span>，` + html;
+            }
+            el.innerHTML = html;
+        }
+
+        // ===== 快捷输入 =====
         document.querySelectorAll('.stele-tag').forEach(tag => {
             tag.addEventListener('click', () => {
                 document.getElementById('inputText').value = tag.dataset.text;
@@ -306,6 +325,8 @@
             });
         });
 
+        document.getElementById('steleChoice').addEventListener('change', () => generatePreview());
+
         function getConfig() {
             return {
                 text: document.getElementById('inputText').value.replace(/\s+/g, ''),
@@ -314,126 +335,147 @@
                 gridType: document.getElementById('gridType').value,
                 mode: document.getElementById('mode').value,
                 direction: document.getElementById('direction').value,
+                preferred: document.getElementById('steleChoice').value,
             };
         }
 
-        const GRID_TYPE_NAMES = { mi: '米字格', tian: '田字格', jiu: '九宫格', none: '无格线' };
+        const GRID_NAMES = { mi: '米字格', tian: '田字格', jiu: '九宫格', none: '无格线' };
 
         function drawGridCell(ctx, x, y, size, gridType) {
-            // 外框
             ctx.strokeStyle = '#888';
             ctx.lineWidth = 2;
             ctx.strokeRect(x, y, size, size);
+            if (gridType === 'none') return;
 
-            // 内部辅助线
-            ctx.strokeStyle = '#d0d0d0';
+            ctx.strokeStyle = '#ccc';
             ctx.lineWidth = 1;
             ctx.setLineDash([4, 4]);
-
             const mid = size / 2;
-
+            ctx.beginPath();
             if (gridType === 'mi') {
-                // 十字
-                ctx.beginPath();
-                ctx.moveTo(x + mid, y); ctx.lineTo(x + mid, y + size);
-                ctx.moveTo(x, y + mid); ctx.lineTo(x + size, y + mid);
-                // 对角线
-                ctx.moveTo(x, y); ctx.lineTo(x + size, y + size);
-                ctx.moveTo(x + size, y); ctx.lineTo(x, y + size);
-                ctx.stroke();
+                ctx.moveTo(x+mid, y); ctx.lineTo(x+mid, y+size);
+                ctx.moveTo(x, y+mid); ctx.lineTo(x+size, y+mid);
+                ctx.moveTo(x, y); ctx.lineTo(x+size, y+size);
+                ctx.moveTo(x+size, y); ctx.lineTo(x, y+size);
             } else if (gridType === 'tian') {
-                ctx.beginPath();
-                ctx.moveTo(x + mid, y); ctx.lineTo(x + mid, y + size);
-                ctx.moveTo(x, y + mid); ctx.lineTo(x + size, y + mid);
-                ctx.stroke();
+                ctx.moveTo(x+mid, y); ctx.lineTo(x+mid, y+size);
+                ctx.moveTo(x, y+mid); ctx.lineTo(x+size, y+mid);
             } else if (gridType === 'jiu') {
-                const t1 = size / 3, t2 = size * 2 / 3;
-                ctx.beginPath();
-                ctx.moveTo(x + t1, y); ctx.lineTo(x + t1, y + size);
-                ctx.moveTo(x + t2, y); ctx.lineTo(x + t2, y + size);
-                ctx.moveTo(x, y + t1); ctx.lineTo(x + size, y + t1);
-                ctx.moveTo(x, y + t2); ctx.lineTo(x + size, y + t2);
-                ctx.stroke();
+                const t1 = size/3, t2 = size*2/3;
+                ctx.moveTo(x+t1, y); ctx.lineTo(x+t1, y+size);
+                ctx.moveTo(x+t2, y); ctx.lineTo(x+t2, y+size);
+                ctx.moveTo(x, y+t1); ctx.lineTo(x+size, y+t1);
+                ctx.moveTo(x, y+t2); ctx.lineTo(x+size, y+t2);
             }
-
+            ctx.stroke();
             ctx.setLineDash([]);
         }
 
         function generatePreview() {
             const cfg = getConfig();
             if (!cfg.text) {
-                document.getElementById('previewContainer').innerHTML =
-                    '<div class="placeholder">请输入要练习的文字</div>';
+                document.getElementById('previewContainer').innerHTML = '<div class="placeholder">输入文字后点击"生成预览"</div>';
                 return;
             }
 
-            const chars = [...cfg.text];
-            const cols = cfg.direction === 'vertical'
-                ? Math.ceil(chars.length / cfg.cols)
-                : cfg.cols;
-            const rowCount = cfg.direction === 'vertical'
-                ? cfg.cols
-                : Math.ceil(chars.length / cfg.cols);
+            checkCoverage(cfg.text, cfg.preferred);
+
+            const chars = [...cfg.text].filter(c => c.trim());
+            const cols = cfg.direction === 'vertical' ? Math.ceil(chars.length / cfg.cols) : cfg.cols;
+            const rowCount = cfg.direction === 'vertical' ? cfg.cols : Math.ceil(chars.length / cfg.cols);
 
             const padding = 40;
             const titleHeight = 50;
+            const sourceHeight = 22;
+            const cellTotal = cfg.cellSize + sourceHeight;
             const width = cols * cfg.cellSize + padding * 2;
-            const height = rowCount * cfg.cellSize + padding * 2 + titleHeight;
+            const height = rowCount * cellTotal + padding * 2 + titleHeight;
 
             canvas = document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
 
-            // 白色背景
-            ctx.fillStyle = '#ffffff';
+            // 宣纸背景
+            ctx.fillStyle = '#faf6ee';
             ctx.fillRect(0, 0, width, height);
 
             // 标题
-            const fontFamily = lishuFontLoaded ? "'LiShu', serif" : "'PingFang SC', serif";
-            ctx.font = `28px ${fontFamily}`;
-            ctx.fillStyle = '#666';
-            ctx.fillText(`隶书字帖 · ${GRID_TYPE_NAMES[cfg.gridType] || ''}`, padding, 36);
+            ctx.font = "22px 'CaoQuanBei', serif";
+            ctx.fillStyle = '#5a3a28';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText(`碑帖字帖 · ${GRID_NAMES[cfg.gridType] || ''}`, padding, 36);
 
-            // 字体大小
-            const fontSize = Math.floor(cfg.cellSize * 0.72);
+            const fontSize = Math.floor(cfg.cellSize * 0.75);
 
-            // 绘制格子和字
             chars.forEach((char, i) => {
                 let row, col;
                 if (cfg.direction === 'vertical') {
-                    col = Math.floor(i / cfg.cols);
+                    col = cols - 1 - Math.floor(i / cfg.cols);
                     row = i % cfg.cols;
-                    // 竖排从右到左
-                    col = cols - 1 - col;
                 } else {
                     row = Math.floor(i / cfg.cols);
                     col = i % cfg.cols;
                 }
 
                 const x = padding + col * cfg.cellSize;
-                const y = padding + titleHeight + row * cfg.cellSize;
+                const y = padding + titleHeight + row * cellTotal;
 
-                // 画格子
                 drawGridCell(ctx, x, y, cfg.cellSize, cfg.gridType);
 
-                // 画字
-                ctx.font = `${fontSize}px ${fontFamily}`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
+                const steleKey = findSteleForChar(char, cfg.preferred);
 
-                if (cfg.mode === 'normal') {
-                    ctx.fillStyle = '#1a1a1a';
-                } else if (cfg.mode === 'miaohong') {
-                    ctx.fillStyle = 'rgba(200, 50, 50, 0.18)';
-                } else if (cfg.mode === 'linmo') {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.10)';
+                if (steleKey) {
+                    const stele = STELES[steleKey];
+
+                    // 用碑帖字体渲染
+                    ctx.font = `${fontSize}px '${stele.fontFamily}'`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    if (cfg.mode === 'normal') {
+                        ctx.fillStyle = '#1a1008';
+                    } else if (cfg.mode === 'miaohong') {
+                        ctx.fillStyle = 'rgba(180, 40, 30, 0.20)';
+                    } else if (cfg.mode === 'linmo') {
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.10)';
+                    }
+
+                    ctx.fillText(char, x + cfg.cellSize / 2, y + cfg.cellSize / 2 + 2);
+
+                    // 碑帖来源标注
+                    ctx.font = '10px -apple-system, "PingFang SC", sans-serif';
+                    ctx.fillStyle = stele.color;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(stele.name, x + cfg.cellSize / 2, y + cfg.cellSize + 4);
+                } else {
+                    // 无碑帖字形
+                    ctx.strokeStyle = '#e0d5c5';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([]);
+                    const m = cfg.cellSize * 0.3;
+                    ctx.beginPath();
+                    ctx.moveTo(x+m, y+m); ctx.lineTo(x+cfg.cellSize-m, y+cfg.cellSize-m);
+                    ctx.moveTo(x+cfg.cellSize-m, y+m); ctx.lineTo(x+m, y+cfg.cellSize-m);
+                    ctx.stroke();
+
+                    ctx.font = `${Math.floor(fontSize * 0.3)}px -apple-system, "PingFang SC", sans-serif`;
+                    ctx.fillStyle = '#ccc';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(char, x + cfg.cellSize / 2, y + cfg.cellSize / 2);
+
+                    ctx.font = '10px -apple-system, "PingFang SC", sans-serif';
+                    ctx.fillStyle = '#cc8866';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText('暂无碑帖', x + cfg.cellSize / 2, y + cfg.cellSize + 4);
                 }
-
-                ctx.fillText(char, x + cfg.cellSize / 2, y + cfg.cellSize / 2 + 2);
             });
 
-            // 空格子补全最后一行
+            // 空格子
             const totalCells = cols * rowCount;
             for (let i = chars.length; i < totalCells; i++) {
                 let row, col;
@@ -445,21 +487,20 @@
                     col = i % cfg.cols;
                 }
                 const x = padding + col * cfg.cellSize;
-                const y = padding + titleHeight + row * cfg.cellSize;
+                const y = padding + titleHeight + row * cellTotal;
                 drawGridCell(ctx, x, y, cfg.cellSize, cfg.gridType);
             }
 
-            const container = document.getElementById('previewContainer');
-            container.innerHTML = '';
-            container.appendChild(canvas);
+            document.getElementById('previewContainer').innerHTML = '';
+            document.getElementById('previewContainer').appendChild(canvas);
         }
 
         function downloadImage() {
             if (!canvas) { alert('请先生成预览'); return; }
-            const link = document.createElement('a');
-            link.download = '隶书字帖.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            const a = document.createElement('a');
+            a.download = '碑帖字帖.png';
+            a.href = canvas.toDataURL('image/png');
+            a.click();
         }
 
         function downloadPDF() {
@@ -467,24 +508,17 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({
                 orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-                unit: 'px',
-                format: [canvas.width, canvas.height],
+                unit: 'px', format: [canvas.width, canvas.height],
             });
-            const imgData = canvas.toDataURL('image/png');
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save('隶书字帖.pdf');
+            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save('碑帖字帖.pdf');
         }
 
-        // 快捷键
         document.getElementById('inputText').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                generatePreview();
-            }
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generatePreview(); }
         });
 
-        // 初始化
-        loadFont();
+        loadAllFonts();
     </script>
 </body>
 </html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>笔画教学 · 碑帖字帖</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f5f0e8; color: #333; min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1008, #2c1810);
+            color: #e8d5b5; padding: 20px 0; text-align: center;
+        }
+        .header h1 { font-size: 28px; letter-spacing: 6px; font-weight: 300; }
+        .header p { font-size: 13px; opacity: 0.6; margin-top: 6px; }
+        .header a { color: #e8d5b5; text-decoration: none; opacity: 0.7; font-size: 13px; }
+        .header a:hover { opacity: 1; }
+        .container { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+        .input-area {
+            background: white; border-radius: 12px; padding: 24px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06); margin-bottom: 24px;
+            display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;
+        }
+        .input-area label { font-size: 13px; color: #666; margin-bottom: 6px; display: block; }
+        .input-area input {
+            border: 2px solid #e0d5c5; border-radius: 8px; padding: 10px 16px;
+            font-size: 24px; width: 120px; text-align: center; font-family: inherit;
+        }
+        .input-area input:focus { outline: none; border-color: #8b6914; }
+        .btn {
+            padding: 10px 24px; border: none; border-radius: 8px; font-size: 14px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary { background: linear-gradient(135deg, #6b4226, #4a2c20); color: #e8d5b5; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(74,44,32,0.4); }
+        .btn-outline { background: white; color: #6b4226; border: 2px solid #d0c5b0; }
+        .btn-outline:hover { background: #faf5ec; }
+        .btn-outline.active { background: #6b4226; color: #e8d5b5; border-color: #6b4226; }
+
+        .main-content {
+            display: flex; gap: 24px; flex-wrap: wrap;
+        }
+        .char-display {
+            background: white; border-radius: 12px; padding: 24px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06); flex: 0 0 auto;
+        }
+        .svg-container {
+            width: 320px; height: 320px; border: 2px solid #e0d5c5;
+            border-radius: 8px; position: relative; background: #faf6ee;
+        }
+        .svg-container svg { width: 100%; height: 100%; }
+
+        .controls-panel {
+            display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+            justify-content: center;
+        }
+        .controls-panel .btn { padding: 8px 16px; font-size: 13px; }
+
+        .speed-control {
+            display: flex; align-items: center; gap: 8px; margin-top: 12px;
+            justify-content: center; font-size: 13px; color: #888;
+        }
+        .speed-control input[type="range"] { width: 120px; }
+
+        .info-panel {
+            background: white; border-radius: 12px; padding: 24px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06); flex: 1; min-width: 280px;
+        }
+        .info-panel h3 {
+            font-size: 16px; color: #4a2c20; margin-bottom: 16px;
+            padding-bottom: 8px; border-bottom: 1px solid #eee;
+        }
+        .stroke-list { list-style: none; }
+        .stroke-list li {
+            padding: 8px 12px; margin: 4px 0; border-radius: 6px;
+            font-size: 14px; cursor: pointer; transition: all 0.15s;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .stroke-list li:hover { background: #faf5ec; }
+        .stroke-list li.active { background: #4a2c20; color: #e8d5b5; }
+        .stroke-list li.done { color: #888; }
+        .stroke-num {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: #e0d5c5; color: #6b4226;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; flex-shrink: 0;
+        }
+        .stroke-list li.active .stroke-num { background: #e8d5b5; color: #4a2c20; }
+        .stroke-preview {
+            width: 32px; height: 32px; flex-shrink: 0;
+        }
+        .stroke-preview svg { width: 100%; height: 100%; }
+
+        .progress-bar {
+            height: 4px; background: #e0d5c5; border-radius: 2px;
+            margin-top: 16px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: #6b4226; border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .placeholder-msg {
+            text-align: center; color: #bbb; padding: 40px 20px; font-size: 15px;
+        }
+        .quick-chars {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
+        }
+        .quick-char {
+            width: 40px; height: 40px; border: 1px solid #d0c5b0;
+            border-radius: 8px; background: #faf5ec; color: #4a2c20;
+            font-size: 22px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: all 0.15s;
+        }
+        .quick-char:hover { background: #4a2c20; color: #e8d5b5; }
+        .footer { text-align: center; padding: 24px; color: #aaa; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>笔 画 教 学</h1>
+        <p>逐笔演示 · 运笔方向 · 笔顺动画</p>
+        <a href="index.html">← 返回字帖生成</a>
+    </div>
+
+    <div class="container">
+        <div class="input-area">
+            <div>
+                <label>输入一个汉字</label>
+                <input type="text" id="charInput" maxlength="1" value="永" autofocus>
+            </div>
+            <button class="btn btn-primary" onclick="loadChar()">查看笔画</button>
+            <div>
+                <label>常用练习字</label>
+                <div class="quick-chars">
+                    <div class="quick-char" onclick="setChar('永')">永</div>
+                    <div class="quick-char" onclick="setChar('和')">和</div>
+                    <div class="quick-char" onclick="setChar('大')">大</div>
+                    <div class="quick-char" onclick="setChar('道')">道</div>
+                    <div class="quick-char" onclick="setChar('德')">德</div>
+                    <div class="quick-char" onclick="setChar('书')">书</div>
+                    <div class="quick-char" onclick="setChar('龙')">龙</div>
+                    <div class="quick-char" onclick="setChar('风')">风</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <div class="char-display">
+                <div class="svg-container" id="svgContainer">
+                    <div class="placeholder-msg">输入汉字后点击"查看笔画"</div>
+                </div>
+                <div class="controls-panel">
+                    <button class="btn btn-outline" id="btnPrev" onclick="prevStroke()">上一笔</button>
+                    <button class="btn btn-primary" id="btnPlay" onclick="togglePlay()">播放动画</button>
+                    <button class="btn btn-outline" id="btnNext" onclick="nextStroke()">下一笔</button>
+                    <button class="btn btn-outline" id="btnReset" onclick="resetView()">重置</button>
+                </div>
+                <div class="speed-control">
+                    <span>慢</span>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5">
+                    <span>快</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+
+            <div class="info-panel">
+                <h3 id="charTitle">笔画列表</h3>
+                <ul class="stroke-list" id="strokeList">
+                    <li class="placeholder-msg">等待加载...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">笔画数据来源: Make Me a Hanzi (MIT) · 9534字笔顺数据</div>
+
+    <script>
+    // ===== Config =====
+    const INK_COLOR = '#1a1008';
+    const INK_COLOR_LIGHT = '#3a2a18';
+    const STROKE_COLORS = [
+        '#c0392b', '#2980b9', '#27ae60', '#e67e22', '#8e44ad',
+        '#16a085', '#d35400', '#2c3e50', '#f39c12', '#1abc9c',
+        '#e74c3c', '#3498db', '#2ecc71', '#e67e22', '#9b59b6',
+    ];
+
+    let strokeData = null;
+    let currentStroke = -1;
+    let totalStrokes = 0;
+    let isPlaying = false;
+    let playTimer = null;
+    let animFrame = null;
+    let strokeCache = {};
+
+    // ===== Load stroke data =====
+    async function loadStrokeData(char) {
+        const cp = char.codePointAt(0);
+        const group = (cp >> 8).toString(16).padStart(2, '0');
+        if (!strokeCache[group]) {
+            try {
+                const resp = await fetch(`./data/strokes/${group}.json`);
+                if (!resp.ok) throw new Error('Not found');
+                strokeCache[group] = await resp.json();
+            } catch (e) { return null; }
+        }
+        return strokeCache[group][char] || null;
+    }
+
+    // ===== Calculate median path length =====
+    function medianLength(medians) {
+        let len = 0;
+        for (let i = 1; i < medians.length; i++) {
+            const dx = medians[i][0] - medians[i-1][0];
+            const dy = medians[i][1] - medians[i-1][1];
+            len += Math.sqrt(dx*dx + dy*dy);
+        }
+        return len;
+    }
+
+    // ===== Build SVG with clip-path masks for brush animation =====
+    function buildSVG() {
+        if (!strokeData) return;
+        const container = document.getElementById('svgContainer');
+        const NS = 'http://www.w3.org/2000/svg';
+
+        const svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('viewBox', '0 0 1024 1024');
+
+        // Defs for clip paths
+        const defs = document.createElementNS(NS, 'defs');
+        strokeData.s.forEach((_, i) => {
+            if (!strokeData.m || !strokeData.m[i]) return;
+            const medians = strokeData.m[i];
+            const clipPath = document.createElementNS(NS, 'clipPath');
+            clipPath.setAttribute('id', `clip-${i}`);
+
+            // The clip mask is a thick stroke along the median path
+            // When dashoffset = totalLength -> invisible; 0 -> fully visible
+            let d = `M ${medians[0][0]} ${medians[0][1]}`;
+            for (let j = 1; j < medians.length; j++) {
+                d += ` L ${medians[j][0]} ${medians[j][1]}`;
+            }
+            const maskPath = document.createElementNS(NS, 'path');
+            maskPath.setAttribute('d', d);
+            maskPath.setAttribute('fill', 'none');
+            maskPath.setAttribute('stroke', 'white');
+            maskPath.setAttribute('stroke-width', '300'); // thick enough to cover the stroke shape
+            maskPath.setAttribute('stroke-linecap', 'round');
+            maskPath.setAttribute('stroke-linejoin', 'round');
+            const len = medianLength(medians);
+            maskPath.setAttribute('stroke-dasharray', `${len}`);
+            maskPath.setAttribute('stroke-dashoffset', `${len}`); // start hidden
+            maskPath.setAttribute('id', `mask-path-${i}`);
+            clipPath.appendChild(maskPath);
+            defs.appendChild(clipPath);
+        });
+        svg.appendChild(defs);
+
+        // 米字格
+        const grid = document.createElementNS(NS, 'g');
+        grid.setAttribute('stroke', '#e0d5c5');
+        grid.setAttribute('stroke-width', '1');
+        grid.setAttribute('stroke-dasharray', '8 8');
+        [[512,0,512,1024],[0,512,1024,512],[0,0,1024,1024],[1024,0,0,1024]].forEach(([x1,y1,x2,y2]) => {
+            const l = document.createElementNS(NS, 'line');
+            l.setAttribute('x1',x1); l.setAttribute('y1',y1);
+            l.setAttribute('x2',x2); l.setAttribute('y2',y2);
+            grid.appendChild(l);
+        });
+        svg.appendChild(grid);
+
+        // 外框
+        const border = document.createElementNS(NS, 'rect');
+        border.setAttribute('x','1'); border.setAttribute('y','1');
+        border.setAttribute('width','1022'); border.setAttribute('height','1022');
+        border.setAttribute('fill','none'); border.setAttribute('stroke','#aaa');
+        border.setAttribute('stroke-width','2');
+        svg.appendChild(border);
+
+        // 浅灰整字轮廓（未书写部分提示）
+        const ghostGroup = document.createElementNS(NS, 'g');
+        ghostGroup.setAttribute('transform', 'scale(1,-1) translate(0,-900)');
+        strokeData.s.forEach((pathD) => {
+            const p = document.createElementNS(NS, 'path');
+            p.setAttribute('d', pathD);
+            p.setAttribute('fill', '#e8e0d5');
+            p.setAttribute('stroke', 'none');
+            ghostGroup.appendChild(p);
+        });
+        svg.appendChild(ghostGroup);
+
+        // 笔画组 - 每笔用clip-path裁切实现书写动画
+        const strokeGroup = document.createElementNS(NS, 'g');
+        strokeGroup.setAttribute('transform', 'scale(1,-1) translate(0,-900)');
+        strokeData.s.forEach((pathD, i) => {
+            const g = document.createElementNS(NS, 'g');
+            g.setAttribute('clip-path', `url(#clip-${i})`);
+            g.setAttribute('id', `stroke-group-${i}`);
+
+            const path = document.createElementNS(NS, 'path');
+            path.setAttribute('d', pathD);
+            path.setAttribute('fill', INK_COLOR);
+            path.setAttribute('stroke', 'none');
+            path.setAttribute('id', `stroke-${i}`);
+            g.appendChild(path);
+
+            // 墨迹纹理 - 轻微不均匀感
+            const texture = document.createElementNS(NS, 'path');
+            texture.setAttribute('d', pathD);
+            texture.setAttribute('fill', 'none');
+            texture.setAttribute('stroke', INK_COLOR_LIGHT);
+            texture.setAttribute('stroke-width', '2');
+            texture.setAttribute('opacity', '0.3');
+            g.appendChild(texture);
+
+            strokeGroup.appendChild(g);
+        });
+        svg.appendChild(strokeGroup);
+
+        // 笔画编号层
+        const numGroup = document.createElementNS(NS, 'g');
+        numGroup.setAttribute('transform', 'scale(1,-1) translate(0,-900)');
+        strokeData.s.forEach((_, i) => {
+            if (!strokeData.m || !strokeData.m[i] || strokeData.m[i].length === 0) return;
+            const mid = strokeData.m[i][0];
+            const t = document.createElementNS(NS, 'text');
+            t.setAttribute('x', mid[0]); t.setAttribute('y', mid[1]);
+            t.setAttribute('fill', STROKE_COLORS[i % STROKE_COLORS.length]);
+            t.setAttribute('font-size', '45'); t.setAttribute('font-weight', 'bold');
+            t.setAttribute('text-anchor', 'middle');
+            t.setAttribute('transform', `scale(1,-1) translate(0,${-2*mid[1]})`);
+            t.setAttribute('opacity', '0');
+            t.setAttribute('id', `num-${i}`);
+            t.textContent = String(i+1);
+            numGroup.appendChild(t);
+        });
+        svg.appendChild(numGroup);
+
+        // 毛笔光标/箭头层
+        const brushGroup = document.createElementNS(NS, 'g');
+        brushGroup.setAttribute('id', 'brushGroup');
+        brushGroup.setAttribute('transform', 'scale(1,-1) translate(0,-900)');
+        svg.appendChild(brushGroup);
+
+        container.innerHTML = '';
+        container.appendChild(svg);
+    }
+
+    // ===== 毛笔书写动画 - 渐进展开clip mask =====
+    function animateStroke(strokeIdx) {
+        return new Promise((resolve) => {
+            const maskPath = document.getElementById(`mask-path-${strokeIdx}`);
+            if (!maskPath || !strokeData.m || !strokeData.m[strokeIdx]) {
+                // Fallback: just reveal immediately
+                if (maskPath) maskPath.setAttribute('stroke-dashoffset', '0');
+                resolve();
+                return;
+            }
+
+            const medians = strokeData.m[strokeIdx];
+            const totalLen = medianLength(medians);
+            const speed = 11 - parseInt(document.getElementById('speedSlider').value);
+            const duration = Math.max(200, Math.min(totalLen * speed * 0.8, 2000)); // ms
+
+            const brushGroup = document.getElementById('brushGroup');
+            const color = STROKE_COLORS[strokeIdx % STROKE_COLORS.length];
+
+            let startTime = null;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Ease-in-out for natural brush feel
+                const eased = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                // Update clip mask
+                const offset = totalLen * (1 - eased);
+                maskPath.setAttribute('stroke-dashoffset', `${offset}`);
+
+                // Draw brush cursor at current position along median
+                drawBrushCursor(medians, eased, color, brushGroup);
+
+                if (progress < 1 && isPlaying) {
+                    animFrame = requestAnimationFrame(step);
+                } else {
+                    maskPath.setAttribute('stroke-dashoffset', '0');
+                    // Clear brush cursor after small delay
+                    setTimeout(() => {
+                        if (brushGroup) brushGroup.innerHTML = '';
+                    }, 150);
+                    resolve();
+                }
+            }
+
+            animFrame = requestAnimationFrame(step);
+        });
+    }
+
+    // ===== 毛笔光标 =====
+    function drawBrushCursor(medians, progress, color, brushGroup) {
+        const NS = 'http://www.w3.org/2000/svg';
+        brushGroup.innerHTML = '';
+
+        // Find position along median at given progress
+        const totalLen = medianLength(medians);
+        let targetDist = progress * totalLen;
+        let pos = medians[0];
+        let angle = 0;
+
+        let accumulated = 0;
+        for (let i = 1; i < medians.length; i++) {
+            const dx = medians[i][0] - medians[i-1][0];
+            const dy = medians[i][1] - medians[i-1][1];
+            const segLen = Math.sqrt(dx*dx + dy*dy);
+
+            if (accumulated + segLen >= targetDist) {
+                const t = (targetDist - accumulated) / (segLen || 1);
+                pos = [
+                    medians[i-1][0] + dx * t,
+                    medians[i-1][1] + dy * t,
+                ];
+                angle = Math.atan2(dy, dx);
+                break;
+            }
+            accumulated += segLen;
+            pos = medians[i];
+            const dx2 = medians[i][0] - medians[i-1][0];
+            const dy2 = medians[i][1] - medians[i-1][1];
+            angle = Math.atan2(dy2, dx2);
+        }
+
+        // Brush tip - teardrop shape
+        const brushSize = 20;
+
+        // Ink splash dot
+        const dot = document.createElementNS(NS, 'circle');
+        dot.setAttribute('cx', pos[0]);
+        dot.setAttribute('cy', pos[1]);
+        dot.setAttribute('r', brushSize);
+        dot.setAttribute('fill', color);
+        dot.setAttribute('opacity', '0.6');
+        brushGroup.appendChild(dot);
+
+        // Brush body (angled line showing direction)
+        const bLen = 60;
+        // Brush goes opposite to movement direction (held behind)
+        const bx = pos[0] - Math.cos(angle) * bLen;
+        const by = pos[1] - Math.sin(angle) * bLen;
+
+        const brushLine = document.createElementNS(NS, 'line');
+        brushLine.setAttribute('x1', pos[0]); brushLine.setAttribute('y1', pos[1]);
+        brushLine.setAttribute('x2', bx); brushLine.setAttribute('y2', by);
+        brushLine.setAttribute('stroke', color);
+        brushLine.setAttribute('stroke-width', '6');
+        brushLine.setAttribute('stroke-linecap', 'round');
+        brushLine.setAttribute('opacity', '0.5');
+        brushGroup.appendChild(brushLine);
+
+        // Small ink trail dots
+        for (let k = 1; k <= 3; k++) {
+            const trailDist = targetDist - k * 15;
+            if (trailDist < 0) break;
+            let tp = medians[0];
+            let acc = 0;
+            for (let i = 1; i < medians.length; i++) {
+                const dx = medians[i][0] - medians[i-1][0];
+                const dy = medians[i][1] - medians[i-1][1];
+                const sl = Math.sqrt(dx*dx+dy*dy);
+                if (acc + sl >= trailDist) {
+                    const t = (trailDist - acc) / (sl || 1);
+                    tp = [medians[i-1][0]+dx*t, medians[i-1][1]+dy*t];
+                    break;
+                }
+                acc += sl;
+                tp = medians[i];
+            }
+            const trail = document.createElementNS(NS, 'circle');
+            trail.setAttribute('cx', tp[0]); trail.setAttribute('cy', tp[1]);
+            trail.setAttribute('r', brushSize * (1 - k*0.2));
+            trail.setAttribute('fill', INK_COLOR);
+            trail.setAttribute('opacity', `${0.15 - k*0.03}`);
+            brushGroup.appendChild(trail);
+        }
+    }
+
+    // ===== Show strokes up to n (instant, for prev/next) =====
+    function showStrokesUpTo(n, instant = true) {
+        if (!strokeData) return;
+
+        // Cancel any running animation
+        if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+        const brushGroup = document.getElementById('brushGroup');
+        if (brushGroup) brushGroup.innerHTML = '';
+
+        for (let i = 0; i < totalStrokes; i++) {
+            const mask = document.getElementById(`mask-path-${i}`);
+            const num = document.getElementById(`num-${i}`);
+            const stroke = document.getElementById(`stroke-${i}`);
+
+            if (i <= n) {
+                // Fully revealed
+                if (mask) mask.setAttribute('stroke-dashoffset', '0');
+                if (stroke) stroke.setAttribute('fill', i === n ? INK_COLOR : INK_COLOR);
+                if (num) num.setAttribute('opacity', '1');
+            } else {
+                // Hidden
+                if (mask) {
+                    const medians = strokeData.m && strokeData.m[i];
+                    const len = medians ? medianLength(medians) : 1000;
+                    mask.setAttribute('stroke-dashoffset', `${len}`);
+                }
+                if (num) num.setAttribute('opacity', '0');
+            }
+        }
+
+        // Highlight current stroke number
+        for (let i = 0; i < totalStrokes; i++) {
+            const num = document.getElementById(`num-${i}`);
+            if (num) {
+                num.setAttribute('opacity', i === n ? '1' : (i < n ? '0.4' : '0'));
+                num.setAttribute('font-size', i === n ? '55' : '45');
+            }
+        }
+
+        // Update list
+        const items = document.querySelectorAll('.stroke-list li');
+        items.forEach((li, i) => {
+            li.classList.remove('active', 'done');
+            if (i === n) li.classList.add('active');
+            else if (i < n) li.classList.add('done');
+        });
+
+        document.getElementById('progressFill').style.width =
+            `${totalStrokes > 0 ? (n+1)/totalStrokes*100 : 0}%`;
+
+        currentStroke = n;
+    }
+
+    // ===== Stroke list =====
+    function buildStrokeList() {
+        const list = document.getElementById('strokeList');
+        const NS = 'http://www.w3.org/2000/svg';
+        list.innerHTML = '';
+
+        strokeData.s.forEach((pathD, i) => {
+            const li = document.createElement('li');
+            li.onclick = () => { stopPlay(); showStrokesUpTo(i); };
+
+            const num = document.createElement('span');
+            num.className = 'stroke-num';
+            num.textContent = i + 1;
+            li.appendChild(num);
+
+            const preview = document.createElement('span');
+            preview.className = 'stroke-preview';
+            const miniSvg = document.createElementNS(NS, 'svg');
+            miniSvg.setAttribute('viewBox', '0 0 1024 1024');
+            const g = document.createElementNS(NS, 'g');
+            g.setAttribute('transform', 'scale(1,-1) translate(0,-900)');
+            const path = document.createElementNS(NS, 'path');
+            path.setAttribute('d', pathD);
+            path.setAttribute('fill', STROKE_COLORS[i % STROKE_COLORS.length]);
+            g.appendChild(path);
+            miniSvg.appendChild(g);
+            preview.appendChild(miniSvg);
+            li.appendChild(preview);
+
+            const label = document.createElement('span');
+            label.textContent = `第 ${i+1} 笔`;
+            li.appendChild(label);
+
+            list.appendChild(li);
+        });
+    }
+
+    // ===== Controls =====
+    function nextStroke() {
+        stopPlay();
+        if (currentStroke < totalStrokes - 1) showStrokesUpTo(currentStroke + 1);
+    }
+
+    function prevStroke() {
+        stopPlay();
+        if (currentStroke > 0) showStrokesUpTo(currentStroke - 1);
+        else resetView();
+    }
+
+    function resetView() {
+        stopPlay();
+        if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+        currentStroke = -1;
+        for (let i = 0; i < totalStrokes; i++) {
+            const mask = document.getElementById(`mask-path-${i}`);
+            const num = document.getElementById(`num-${i}`);
+            if (mask) {
+                const medians = strokeData.m && strokeData.m[i];
+                const len = medians ? medianLength(medians) : 1000;
+                mask.setAttribute('stroke-dashoffset', `${len}`);
+            }
+            if (num) num.setAttribute('opacity', '0');
+        }
+        const bg = document.getElementById('brushGroup');
+        if (bg) bg.innerHTML = '';
+        document.querySelectorAll('.stroke-list li').forEach(li => li.classList.remove('active','done'));
+        document.getElementById('progressFill').style.width = '0%';
+    }
+
+    function togglePlay() {
+        if (isPlaying) stopPlay(); else startPlay();
+    }
+
+    async function startPlay() {
+        if (isPlaying) return;
+        isPlaying = true;
+        document.getElementById('btnPlay').textContent = '暂停';
+        document.getElementById('btnPlay').classList.add('active');
+
+        if (currentStroke >= totalStrokes - 1) resetView();
+
+        // Reveal previous strokes instantly
+        for (let i = 0; i <= currentStroke; i++) {
+            const mask = document.getElementById(`mask-path-${i}`);
+            if (mask) mask.setAttribute('stroke-dashoffset', '0');
+        }
+
+        // Animate remaining strokes one by one
+        for (let i = currentStroke + 1; i < totalStrokes; i++) {
+            if (!isPlaying) break;
+
+            currentStroke = i;
+
+            // Update list
+            const items = document.querySelectorAll('.stroke-list li');
+            items.forEach((li, j) => {
+                li.classList.remove('active', 'done');
+                if (j === i) li.classList.add('active');
+                else if (j < i) li.classList.add('done');
+            });
+
+            // Show number
+            const num = document.getElementById(`num-${i}`);
+            if (num) { num.setAttribute('opacity', '1'); num.setAttribute('font-size', '55'); }
+            // Dim previous numbers
+            for (let j = 0; j < i; j++) {
+                const pn = document.getElementById(`num-${j}`);
+                if (pn) { pn.setAttribute('opacity', '0.4'); pn.setAttribute('font-size', '45'); }
+            }
+
+            document.getElementById('progressFill').style.width =
+                `${(i+1)/totalStrokes*100}%`;
+
+            // Animate this stroke with brush effect
+            await animateStroke(i);
+
+            // Small pause between strokes
+            if (isPlaying && i < totalStrokes - 1) {
+                await new Promise(r => { playTimer = setTimeout(r, 200); });
+            }
+        }
+
+        stopPlay();
+    }
+
+    function stopPlay() {
+        isPlaying = false;
+        if (playTimer) { clearTimeout(playTimer); playTimer = null; }
+        if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+        document.getElementById('btnPlay').textContent = '播放动画';
+        document.getElementById('btnPlay').classList.remove('active');
+    }
+
+    // ===== Load character =====
+    async function loadChar() {
+        const input = document.getElementById('charInput').value.trim();
+        if (!input) return;
+        const char = [...input][0];
+
+        document.getElementById('svgContainer').innerHTML = '<div class="placeholder-msg">加载中...</div>';
+        document.getElementById('strokeList').innerHTML = '<li class="placeholder-msg">加载中...</li>';
+
+        strokeData = await loadStrokeData(char);
+        if (!strokeData) {
+            document.getElementById('svgContainer').innerHTML = `<div class="placeholder-msg">未找到"${char}"的笔画数据</div>`;
+            document.getElementById('strokeList').innerHTML = '<li class="placeholder-msg">无数据</li>';
+            document.getElementById('charTitle').textContent = '笔画列表';
+            return;
+        }
+
+        totalStrokes = strokeData.s.length;
+        currentStroke = -1;
+        isPlaying = false;
+
+        document.getElementById('charTitle').textContent = `「${char}」共 ${totalStrokes} 笔`;
+
+        buildSVG();
+        buildStrokeList();
+        startPlay();
+    }
+
+    function setChar(c) {
+        document.getElementById('charInput').value = c;
+        loadChar();
+    }
+
+    document.getElementById('charInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') loadChar();
+    });
+
+    document.getElementById('charInput').addEventListener('focus', function() { this.select(); });
+
+    loadChar();
+    </script>
+</body>
+</html>

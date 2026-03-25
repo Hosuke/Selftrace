@@ -4,3 +4,12 @@ __pycache__/
 .DS_Store
 node_modules/
 .vercel/
+
+# Raw source data (too large for git, regeneratable)
+data/graphics.txt
+data/dictionary.txt
+
+# Keep only the fonts that are actually used in frontend
+data/fonts/LinHaiLiShu.ttf
+data/fonts/huawen_liti.TTF
+data/fonts/lishu.ttf
