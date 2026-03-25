@@ -258,6 +258,54 @@
 
         let canvas = null;
 
+        // ===== 碑帖拓片图动态加载 =====
+        const RUBBING_STELES = ['曹全碑', '礼器碑', '乙瑛碑', '张迁碑', '史晨碑', '石门颂', '西狭颂', '华山庙碑'];
+        const imageCache = {}; // char -> { stele, img, loaded }
+
+        function getApiBase() {
+            // Vercel: /api/stele-image, local dev: proxy needed
+            if (location.hostname === 'localhost') return null; // skip on local
+            return '/api/stele-image';
+        }
+
+        async function fetchRubbingImage(char, preferredStele) {
+            const cacheKey = `${char}_${preferredStele || 'auto'}`;
+            if (imageCache[cacheKey]) return imageCache[cacheKey];
+
+            const api = getApiBase();
+            if (!api) return null;
+
+            // Try preferred stele first, then others
+            const steles = preferredStele && preferredStele !== 'auto'
+                ? [preferredStele]
+                : RUBBING_STELES;
+
+            for (const stele of steles) {
+                try {
+                    const url = `${api}?char=${encodeURIComponent(char)}&stele=${encodeURIComponent(stele)}`;
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+
+                    const loaded = await new Promise((resolve) => {
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                        img.src = url;
+                    });
+
+                    if (loaded && img.naturalWidth > 0) {
+                        const result = { stele, img, loaded: true };
+                        imageCache[cacheKey] = result;
+                        return result;
+                    }
+                } catch (e) {
+                    // continue to next stele
+                }
+            }
+
+            imageCache[cacheKey] = null;
+            return null;
+        }
+
         // ===== 字体加载 =====
         async function loadAllFonts() {
             const statusEl = document.getElementById('fontStatus');
@@ -421,6 +469,30 @@
             ctx.setLineDash([]);
         }
 
+        function drawMissingPlaceholder(ctx, x, y, cellSize, fontSize, char) {
+            ctx.strokeStyle = '#e0d5c5';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([]);
+            const m = cellSize * 0.3;
+            ctx.beginPath();
+            ctx.moveTo(x+m, y+m); ctx.lineTo(x+cellSize-m, y+cellSize-m);
+            ctx.moveTo(x+cellSize-m, y+m); ctx.lineTo(x+m, y+cellSize-m);
+            ctx.stroke();
+
+            ctx.font = `${Math.floor(fontSize * 0.3)}px -apple-system, "PingFang SC", sans-serif`;
+            ctx.fillStyle = '#ccc';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(char, x + cellSize / 2, y + cellSize / 2);
+
+            const api = getApiBase();
+            ctx.font = '10px -apple-system, "PingFang SC", sans-serif';
+            ctx.fillStyle = '#cc8866';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(api ? '加载中...' : '暂无碑帖', x + cellSize / 2, y + cellSize + 4);
+        }
+
         function generatePreview() {
             const cfg = getConfig();
             if (!cfg.text) {
@@ -508,27 +580,46 @@
                     ctx.textBaseline = 'top';
                     ctx.fillText(stele.name, x + cfg.cellSize / 2, y + cfg.cellSize + 4);
                 } else {
-                    // 无碑帖字形
-                    ctx.strokeStyle = '#e0d5c5';
-                    ctx.lineWidth = 1;
-                    ctx.setLineDash([]);
-                    const m = cfg.cellSize * 0.3;
-                    ctx.beginPath();
-                    ctx.moveTo(x+m, y+m); ctx.lineTo(x+cfg.cellSize-m, y+cfg.cellSize-m);
-                    ctx.moveTo(x+cfg.cellSize-m, y+m); ctx.lineTo(x+m, y+cfg.cellSize-m);
-                    ctx.stroke();
+                    // 本地字体没有 -> 尝试动态加载碑帖拓片图
+                    // 先画占位符，异步加载后更新
+                    const cellX = x, cellY = y;
+                    drawMissingPlaceholder(ctx, cellX, cellY, cfg.cellSize, fontSize, char);
 
-                    ctx.font = `${Math.floor(fontSize * 0.3)}px -apple-system, "PingFang SC", sans-serif`;
-                    ctx.fillStyle = '#ccc';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(char, x + cfg.cellSize / 2, y + cfg.cellSize / 2);
+                    // 异步: 尝试从API加载拓片
+                    if (getApiBase()) {
+                        (async () => {
+                            const rubbing = await fetchRubbingImage(char);
+                            if (rubbing && rubbing.img) {
+                                // 重绘这个格子
+                                const pad = Math.floor(cfg.cellSize * 0.08);
+                                const drawSize = cfg.cellSize - pad * 2;
 
-                    ctx.font = '10px -apple-system, "PingFang SC", sans-serif';
-                    ctx.fillStyle = '#cc8866';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'top';
-                    ctx.fillText('暂无碑帖', x + cfg.cellSize / 2, y + cfg.cellSize + 4);
+                                // 清除占位符区域
+                                ctx.fillStyle = '#faf6ee';
+                                ctx.fillRect(cellX + 1, cellY + 1, cfg.cellSize - 2, cfg.cellSize - 2);
+
+                                // 重画格线
+                                drawGridCell(ctx, cellX, cellY, cfg.cellSize, cfg.gridType);
+
+                                // 绘制拓片图
+                                if (cfg.mode === 'miaohong') {
+                                    ctx.globalAlpha = 0.2;
+                                } else if (cfg.mode === 'linmo') {
+                                    ctx.globalAlpha = 0.1;
+                                }
+                                ctx.drawImage(rubbing.img, cellX + pad, cellY + pad, drawSize, drawSize);
+                                ctx.globalAlpha = 1.0;
+
+                                // 标注来源
+                                ctx.font = '10px -apple-system, "PingFang SC", sans-serif';
+                                ctx.fillStyle = '#6b4226';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'top';
+                                ctx.fillText(rubbing.stele + '·拓', cellX + cfg.cellSize / 2, cellY + cfg.cellSize + 4);
+                            }
+                        })();
+                    }
+
                 }
             });
 
