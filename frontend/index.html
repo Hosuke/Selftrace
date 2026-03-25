@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>碑帖字帖生成器</title>
+    <title>字跡 Selftrace · 碑帖字帖生成器</title>
     <style>
-        @font-face { font-family: 'CaoQuanBei'; src: url('./fonts/CaoQuanBei.ttf') format('truetype'); font-display: swap; }
-        @font-face { font-family: 'Qiji'; src: url('./fonts/qiji.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'Jiaguwen'; src: url('./fonts/FangzhengJiaguwen.ttf') format('truetype'); font-display: swap; }
         @font-face { font-family: 'ShuowenJiezi'; src: url('./fonts/ShuowenJiezi.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'CaoQuanBei'; src: url('./fonts/CaoQuanBei.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'AoyagiLishu'; src: url('./fonts/AoyagiLishu.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'Qiji'; src: url('./fonts/qiji.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'XuandongKai'; src: url('./fonts/XuandongKaishu.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'MasaFont'; src: url('./fonts/MasaFont-Regular.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'Caoshu'; src: url('./fonts/ZhongqiLiujiangCaoshu.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'Bakudai'; src: url('./fonts/Bakudai-Regular.ttf') format('truetype'); font-display: swap; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -84,8 +90,8 @@
 </head>
 <body>
     <div class="header">
-        <h1>碑 帖 字 帖</h1>
-        <p>曹全碑 · 齐伋体 · 说文解字 — 三种历史字形，9201字覆盖</p>
+        <h1>字 跡 Selftrace</h1>
+        <p>甲骨文 · 篆书 · 隶书 · 楷书 · 行书 · 草书 — 九种字体，20276字覆盖</p>
     </div>
 
     <div class="container">
@@ -102,10 +108,20 @@
                 <div class="form-group">
                     <label>优先碑帖</label>
                     <select id="steleChoice">
-                        <option value="auto" selected>自动匹配（优先曹全碑）</option>
-                        <option value="caoguanbei">曹全碑（东汉·隶书·602字）</option>
-                        <option value="qiji">齐伋体（明代·木版刻本·5856字）</option>
-                        <option value="shuowen">说文解字（东汉·小篆·6738字）</option>
+                        <option value="auto" selected>自动匹配（优先碑帖原字）</option>
+                        <optgroup label="碑帖复刻">
+                            <option value="caoguanbei">曹全碑（东汉·隶书·602字）</option>
+                            <option value="qiji">齐伋体（明代·刻本·5856字）</option>
+                            <option value="shuowen">说文解字（东汉·小篆·6738字）</option>
+                            <option value="jiaguwen">甲骨文（商代·1312字）</option>
+                        </optgroup>
+                        <optgroup label="书法风格">
+                            <option value="aoyagilishu">青柳隶书（隶书·12204字）</option>
+                            <option value="xuandongkai">玄冬楷书（楷书·6775字）</option>
+                            <option value="masafont">正风行书（行书·17615字）</option>
+                            <option value="caoshu">流江草书（草书·6763字）</option>
+                            <option value="bakudai">莫大毛笔（毛笔·18375字）</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="form-group">
@@ -185,7 +201,7 @@
     <div class="footer">
         <a href="strokes.html" style="color:#6b4226;text-decoration:none;font-weight:600;">笔画教学 →</a>
         <br><br>
-        碑帖字帖生成器 · 只用真实历史字形 · 曹全碑(CoQuBeLi) · 齐伋体(SIL OFL) · 说文解字(台湾政府开放数据)
+        字跡 Selftrace · 甲骨文 · 篆书 · 隶书 · 楷书 · 行书 · 草书 · 毛笔 — 九种历史字体
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -193,50 +209,27 @@
     <script src="./stele_chars.js"></script>
 
     <script>
-        // ===== 碑帖配置 =====
+        // ===== 字体配置 (按历史年代排序) =====
         const STELES = {
-            caoguanbei: {
-                fontFamily: 'CaoQuanBei',
-                name: '曹全碑',
-                period: '东汉',
-                style: '隶书',
-                file: './fonts/CaoQuanBei.ttf',
-                chars: null, // will be set from stele_chars.js
-                color: '#6b4226',
-                bgColor: '#e8d5b5',
-                loaded: false,
-            },
-            qiji: {
-                fontFamily: 'Qiji',
-                name: '齐伋体',
-                period: '明代',
-                style: '木版刻本',
-                file: './fonts/qiji.ttf',
-                chars: null,
-                color: '#2c4a5a',
-                bgColor: '#d5e0e8',
-                loaded: false,
-            },
-            shuowen: {
-                fontFamily: 'ShuowenJiezi',
-                name: '说文解字',
-                period: '东汉',
-                style: '小篆',
-                file: './fonts/ShuowenJiezi.ttf',
-                chars: null,
-                color: '#3a5a2c',
-                bgColor: '#dde8d5',
-                loaded: false,
-            },
+            jiaguwen:    { fontFamily: 'Jiaguwen',     name: '甲骨文',   period: '商代',  style: '甲骨文', file: './fonts/FangzhengJiaguwen.ttf', color: '#8b6508', bgColor: '#f5e6c8', loaded: false },
+            shuowen:     { fontFamily: 'ShuowenJiezi', name: '说文解字', period: '东汉',  style: '小篆',   file: './fonts/ShuowenJiezi.ttf',      color: '#3a5a2c', bgColor: '#dde8d5', loaded: false },
+            caoguanbei:  { fontFamily: 'CaoQuanBei',   name: '曹全碑',   period: '东汉',  style: '隶书',   file: './fonts/CaoQuanBei.ttf',        color: '#6b4226', bgColor: '#e8d5b5', loaded: false },
+            aoyagilishu: { fontFamily: 'AoyagiLishu',  name: '青柳隶书', period: '当代',  style: '隶书',   file: './fonts/AoyagiLishu.ttf',       color: '#7a5230', bgColor: '#ede0d0', loaded: false },
+            qiji:        { fontFamily: 'Qiji',         name: '齐伋体',   period: '明代',  style: '刻本',   file: './fonts/qiji.ttf',              color: '#2c4a5a', bgColor: '#d5e0e8', loaded: false },
+            xuandongkai: { fontFamily: 'XuandongKai',  name: '玄冬楷书', period: '当代',  style: '楷书',   file: './fonts/XuandongKaishu.ttf',    color: '#4a3a6b', bgColor: '#e0d5e8', loaded: false },
+            masafont:    { fontFamily: 'MasaFont',     name: '正风行书', period: '当代',  style: '行书',   file: './fonts/MasaFont-Regular.ttf',  color: '#2c5a4a', bgColor: '#d5e8e0', loaded: false },
+            caoshu:      { fontFamily: 'Caoshu',       name: '流江草书', period: '当代',  style: '草书',   file: './fonts/ZhongqiLiujiangCaoshu.ttf', color: '#5a2c2c', bgColor: '#e8d5d5', loaded: false },
+            bakudai:     { fontFamily: 'Bakudai',      name: '莫大毛笔', period: '当代',  style: '毛笔',   file: './fonts/Bakudai-Regular.ttf',   color: '#3a3a3a', bgColor: '#e0e0e0', loaded: false },
         };
 
         // Link char sets from stele_chars.js
-        STELES.caoguanbei.chars = typeof CAOGUANBEI_CHARS !== 'undefined' ? CAOGUANBEI_CHARS : new Set();
-        STELES.qiji.chars = typeof QIJI_CHARS !== 'undefined' ? QIJI_CHARS : new Set();
-        STELES.shuowen.chars = typeof SHUOWEN_CHARS !== 'undefined' ? SHUOWEN_CHARS : new Set();
+        for (const key of Object.keys(STELES)) {
+            const varName = key.toUpperCase() + '_CHARS';
+            STELES[key].chars = (typeof window[varName] !== 'undefined') ? window[varName] : new Set();
+        }
 
-        // Auto-match priority order
-        const AUTO_PRIORITY = ['caoguanbei', 'qiji', 'shuowen'];
+        // Auto-match priority: 碑帖复刻优先, 再按书体
+        const AUTO_PRIORITY = ['caoguanbei', 'qiji', 'shuowen', 'jiaguwen', 'aoyagilishu', 'xuandongkai', 'masafont', 'caoshu', 'bakudai'];
 
         let canvas = null;
 
